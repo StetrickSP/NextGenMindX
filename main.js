@@ -58,9 +58,61 @@ addForm.addEventListener('submit', (e) => {
 // Xoa san pham
 function deleteApartment(id)
 {
-    const apartmentRef = database.ref('apartment/'+id)
+    const apartmentRef = database.ref('apartments/'+ id)
     apartmentRef.remove().then(()=>{
-        
+        alert("Da xoa san pham")
+        displayApartment()
+    })
+}
+
+// Chinh sua san pham
+function editApartment(id) {
+    const apartmentRef = database.ref('apartments/' + id)
+    apartmentRef.once('value', (snapshot) => {
+        const apartment = snapshot.val()
+
+        updateName.value = apartment.name
+        updatePrice.value = apartment.price
+        updateDescription.value = apartment.description
+
+        updateForm.style.display = 'block'
+
+        updateForm.onsubmit = (e) => {
+            e.preventDefault()
+            const updatedName = updateName.value
+            const updatedPrice = updatePrice.value
+            const updatedDescription = updateDescription.value
+            const updatedImage = updateImageUpload.files[0]
+
+            if(updatedImage) {
+                const reader = new FileReader()
+                reader.onloadend = () => {
+                    const updatedImageData = reader.result
+                    apartmentRef.update({
+                        name: updatedName,
+                        price: updatedPrice,
+                        description: updatedDescription,
+                        image: updatedImageData
+                    }).then(() => {
+                        alert("Chỉnh sửa thành công ")
+                        resetUpdateForm()
+                        displayApartment()
+                    })
+                }
+                reader.readAsDataURL(updatedImage)
+            } else {
+                apartmentRef.update({
+                    name: updatedName,
+                    price: updatedPrice,
+                    description: updatedDescription
+                }).then(() => {
+                    alert("Bạn đã cập nhật thành công, mặc dù bạn không chỉnh sửa gì hết")
+                    resetUpdateForm()
+                    displayApartment()
+                })
+            }
+        }
+
     })
 }
 
@@ -70,6 +122,15 @@ function resetAddForm() {
     apartmentPrice.value = ''
     apartmentDescription.value = ''
     imageUpload.value = ''
+}
+
+// Reset khung thong tin cap nhat san pham 
+function resetUpdateForm() {
+    updateName.value = ''
+    updatePrice.value = ''
+    updateDescription.value = ''
+    updateImageUpload.value = ''
+    updateForm.style.display = 'none'
 }
 
 // Hiển thị sản phẩm lên màn hình
