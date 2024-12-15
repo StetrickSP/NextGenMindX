@@ -55,6 +55,15 @@ addForm.addEventListener('submit', (e) => {
     }
 })
 
+// Xoa san pham
+function deleteApartment(id)
+{
+    const apartmentRef = database.ref('apartment/'+id)
+    apartmentRef.remove().then(()=>{
+        
+    })
+}
+
 // Reset khung thông tin thêm sản phẩm
 function resetAddForm() {
     apartmentName.value = ''
